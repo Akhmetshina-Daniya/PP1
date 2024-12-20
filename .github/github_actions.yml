@@ -1,0 +1,43 @@
+name: CI
+
+# Контролирует, когда запускать workflow
+on:
+  # Запускается при push в ветку main
+  push:
+    branches: [ "main" ]
+  # Запускается при создании pull request
+  pull_request:
+    branches: [ "*" ]
+
+  # Позволяет запускать вручную из вкладки Actions
+  workflow_dispatch:
+
+jobs:
+  run-python:
+    # Используем Ubuntu 22.04 для выполнения
+    runs-on: ubuntu-22.04
+
+    # Последовательность шагов
+    steps:
+      # Проверить репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Установить Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # Установить зависимости (если есть файл requirements.txt)
+      - name: Install dependencies
+        run: |
+          if [ -f "requirements.txt" ]; then
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+          fi
+
+      # Запустить main.py
+      - name: Run Python script
+        run: |
+          python main.py
